@@ -1,5 +1,5 @@
 body {
-  background: linear-gradient(90deg, #a793e4, #e288be);
+  background: linear-gradient(90deg, #87d7f6, #958af0);
   height: 100vh;
   display: flex;
   align-items: center;
@@ -12,10 +12,11 @@ body {
   display: flex;
   flex-direction: column;
   width: 600px;
-  border: 1px solid #a64ba3;
+  border: 1px solid #233392;
   padding: 40px;
   border-radius: 15px;
-  box-shadow: 4px 4px #701e6d5c;
+  box-shadow: 4px 4px #0d2674ab;
+  background: linear-gradient(90deg, #363d9a, #22667a);
 }
 
 .input-field {
@@ -41,13 +42,14 @@ body {
 
 .action {
   text-align: center;
+  margin-top: 20px;
 }
 
 .action button {
   padding: 5px 20px;
   font-size: 16px;
   border-radius: 5px;
-  background: linear-gradient(90deg, #d78ac5, #b61c8f);
+  background: linear-gradient(90deg, #0e4c6a, #131e80);
   color: white;
   margin: 5px;
 }
@@ -61,6 +63,12 @@ body {
 
 .grid-container {
   margin-top: 3rem;
+}
+
+.grid-container .input-field {
+  width: 70%;
+  align-items: center;
+  text-align: center;
 }
 
 .row {
@@ -84,6 +92,11 @@ body {
 
 @media only screen and (max-width: 780px) {
   .container {
-    width: 95%;
+    width: 80%;
+  }
+
+  .grid-container .input-field {
+    width: 100%;
+    align-items: center;
   }
 }

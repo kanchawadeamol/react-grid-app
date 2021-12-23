@@ -13,22 +13,25 @@ export default function App() {
 
   useEffect(() => {
     setHighlightedCells([]);
-    let emptyGrid = Array(rows).fill(Array(cols).fill("A"));
+    let emptyGrid = Array(rows).fill(Array(cols).fill(""));
     let filledGrid = emptyGrid.map((row, rowIndex) => {
       return row.map(
         (cell, cellIndex) => characters[cellIndex + rowIndex * cols] ?? "-"
       );
     });
+
     setGrid(filledGrid);
 
     if (searchText && grid.length) {
       findWword();
     }
-  }, [characters, rows, cols, searchText]);
+  }, [showGrid, searchText]);
 
   const findWword = () => {
     setHighlightedCells([]);
+
     let firstCharPosition = "";
+
     grid.some((row, rowIndex) => {
       row.length &&
         row.some((cell, cellIndex) => {
@@ -59,6 +62,7 @@ export default function App() {
     });
 
     if (!isInvalid) setHighlightedCells([...highlightedCells, ...wordPosition]);
+    console.log();
   };
 
   const checkVertical = (firstCharPosition, searchTextArr) => {
@@ -89,6 +93,7 @@ export default function App() {
     });
 
     if (!isInvalid) setHighlightedCells([...highlightedCells, ...wordPosition]);
+    console.log("highlightedCells : " + highlightedCells);
   };
 
   const handleInputChange = (e) => {
@@ -142,45 +147,50 @@ export default function App() {
 
   return (
     <div className="container">
-      <div className="form-div">
-        <div className="input-field">
-          <label>Rows</label>
-          <input
-            name="rows"
-            type="number"
-            value={rows}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="input-field">
-          <label>Columns</label>
-          <input
-            name="columns"
-            type="number"
-            value={cols}
-            onChange={handleInputChange}
-          />
-        </div>
+      {!showGrid && (
+        <div className="form-div">
+          <div className="input-field">
+            <label>Rows</label>
+            <input
+              min="0"
+              name="rows"
+              type="number"
+              value={rows}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="input-field">
+            <label>Columns</label>
+            <input
+              min="0"
+              name="columns"
+              type="number"
+              value={cols}
+              onChange={handleInputChange}
+            />
+          </div>
 
-        <div className="input-field">
-          <label>Characters</label>
-          <input
-            name="characters"
-            type="text"
-            value={characters}
-            onChange={handleInputChange}
-          />
+          <div className="input-field">
+            <label>Characters</label>
+            <input
+              name="characters"
+              type="text"
+              value={characters}
+              onChange={handleInputChange}
+            />
+          </div>
+          {error && (
+            <div className="error">{`Please Enter ${
+              rows * cols
+            } characters`}</div>
+          )}
+          <div className="action">
+            {!showGrid && (
+              <button onClick={displayGridHandler}>Display Grid</button>
+            )}
+          </div>
         </div>
-        {error && (
-          <div className="error">{`\n Please Enter ${
-            rows * cols
-          } characters`}</div>
-        )}
-        <div className="action">
-          <button onClick={displayGridHandler}>Display Grid</button>
-          <button onClick={resetClickHandler}>Reset</button>
-        </div>
-      </div>
+      )}
       {showGrid && (
         <div className="grid-container">
           <div className="input-field">
@@ -214,6 +224,9 @@ export default function App() {
                 </div>
               );
             })}
+          <div className="action">
+            <button onClick={resetClickHandler}>Reset</button>
+          </div>
         </div>
       )}
     </div>
