@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/react-grid-app/static/css/main.f7d6a8e4.css",
+    "main.js": "/react-grid-app/static/js/main.71bf3fb4.js",
+    "index.html": "/react-grid-app/index.html",
+    "main.f7d6a8e4.css.map": "/react-grid-app/static/css/main.f7d6a8e4.css.map",
+    "main.71bf3fb4.js.map": "/react-grid-app/static/js/main.71bf3fb4.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f7d6a8e4.css",
+    "static/js/main.71bf3fb4.js"
+  ]
+}
