@@ -1,25 +1,221 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
 
-function App() {
+export default function App() {
+  const [rows, setRows] = useState(0);
+  const [cols, setColumns] = useState(0);
+  const [grid, setGrid] = useState([]);
+  const [characters, setCharacters] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [highlightedCells, setHighlightedCells] = useState([]);
+  const [showGrid, setShowGrid] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setHighlightedCells([]);
+    let emptyGrid = Array(rows).fill(Array(cols).fill("A"));
+    let filledGrid = emptyGrid.map((row, rowIndex) => {
+      return row.map(
+        (cell, cellIndex) => characters[cellIndex + rowIndex * cols] ?? "-"
+      );
+    });
+    setGrid(filledGrid);
+
+    if (searchText && grid.length) {
+      findWword();
+    }
+  }, [characters, rows, cols, searchText]);
+
+  const findWword = () => {
+    setHighlightedCells([]);
+    let firstCharPosition = "";
+    grid.some((row, rowIndex) => {
+      row.length &&
+        row.some((cell, cellIndex) => {
+          if (cell === searchText[0]) {
+            firstCharPosition = `${rowIndex}-${cellIndex}`;
+          }
+          return cell === searchText[0];
+        });
+    });
+
+    let searchTextArr = searchText.split("");
+
+    checkHorizontal(firstCharPosition, searchTextArr);
+    checkVertical(firstCharPosition, searchTextArr);
+    checkDiagonal(firstCharPosition, searchTextArr);
+  };
+
+  const checkHorizontal = (firstCharPosition, searchTextArr) => {
+    let rowNumber = parseInt(firstCharPosition.split("-")[0]);
+    let colNumber = parseInt(firstCharPosition.split("-")[1]);
+
+    let wordPosition = [];
+
+    let isInvalid = searchTextArr.some((char, index) => {
+      if (colNumber + index >= cols) return true;
+      wordPosition.push(`${rowNumber}-${colNumber + index}`);
+      return char !== grid[rowNumber]?.[colNumber + index];
+    });
+
+    if (!isInvalid) setHighlightedCells([...highlightedCells, ...wordPosition]);
+  };
+
+  const checkVertical = (firstCharPosition, searchTextArr) => {
+    let rowNumber = parseInt(firstCharPosition.split("-")[0]);
+    let colNumber = parseInt(firstCharPosition.split("-")[1]);
+
+    let wordPosition = [];
+
+    let isInvalid = searchTextArr.some((char, index) => {
+      if (rowNumber + index >= rows) return true;
+      wordPosition.push(`${rowNumber + index}-${colNumber}`);
+      return char !== grid[rowNumber + index]?.[colNumber];
+    });
+
+    if (!isInvalid) setHighlightedCells([...highlightedCells, ...wordPosition]);
+  };
+
+  const checkDiagonal = (firstCharPosition, searchTextArr) => {
+    let rowNumber = parseInt(firstCharPosition.split("-")[0]);
+    let colNumber = parseInt(firstCharPosition.split("-")[1]);
+
+    let wordPosition = [];
+
+    let isInvalid = searchTextArr.some((char, index) => {
+      if (colNumber + index >= cols || rowNumber + index >= rows) return true;
+      wordPosition.push(`${rowNumber + index}-${colNumber + index}`);
+      return char !== grid[rowNumber + index]?.[colNumber + index];
+    });
+
+    if (!isInvalid) setHighlightedCells([...highlightedCells, ...wordPosition]);
+  };
+
+  const handleInputChange = (e) => {
+    switch (e.target.name) {
+      case "rows":
+        setRows(parseInt(e.target.value));
+        break;
+
+      case "columns":
+        setColumns(parseInt(e.target.value));
+        break;
+
+      case "characters":
+        setCharacters(e.target.value.replace(/\s/g, ""));
+        break;
+
+      case "searchText":
+        setSearchText(e.target.value);
+        break;
+
+      default:
+        return;
+    }
+  };
+
+  const resetClickHandler = () => {
+    setRows(0);
+    setColumns(0);
+    setGrid([]);
+    setCharacters("");
+    setSearchText("");
+    setHighlightedCells([]);
+    setShowGrid(false);
+  };
+
+  const displayGridHandler = () => {
+    const totalGridNumber = rows * cols;
+
+    if (totalGridNumber !== characters.length) {
+      setError(true);
+      return;
+    }
+
+    if (rows <= 0 || cols <= 0) {
+      return;
+    }
+
+    setError(false);
+    setShowGrid(true);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <div className="form-div">
+        <div className="input-field">
+          <label>Rows</label>
+          <input
+            name="rows"
+            type="number"
+            value={rows}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="input-field">
+          <label>Columns</label>
+          <input
+            name="columns"
+            type="number"
+            value={cols}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-field">
+          <label>Characters</label>
+          <input
+            name="characters"
+            type="text"
+            value={characters}
+            onChange={handleInputChange}
+          />
+        </div>
+        {error && (
+          <div className="error">{`\n Please Enter ${
+            rows * cols
+          } characters`}</div>
+        )}
+        <div className="action">
+          <button onClick={displayGridHandler}>Display Grid</button>
+          <button onClick={resetClickHandler}>Reset</button>
+        </div>
+      </div>
+      {showGrid && (
+        <div className="grid-container">
+          <div className="input-field">
+            <label>Search Text</label>
+            <input
+              name="searchText"
+              type="text"
+              value={searchText}
+              onChange={handleInputChange}
+            />
+          </div>
+          {grid.length &&
+            grid.map((row, rowIndex) => {
+              return (
+                <div key={rowIndex} className="row">
+                  {row.map((cell, cellIndex) => {
+                    let cellPosition = `${rowIndex}-${cellIndex}`;
+                    return (
+                      <div
+                        key={cellIndex}
+                        className={`cell ${
+                          highlightedCells.includes(cellPosition)
+                            ? "highlight"
+                            : ""
+                        }`}
+                      >
+                        {cell}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+        </div>
+      )}
     </div>
   );
 }
-
-export default App;
